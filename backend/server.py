@@ -291,6 +291,11 @@ async def send_otp(request: OTPRequest, background_tasks: BackgroundTasks):
     
     return {"message": "OTP sent successfully"}
 
+@api_router.options("/auth/send-otp")
+async def options_send_otp():
+    """Handles CORS preflight requests for /auth/send-otp."""
+    return {"message": "OK"}
+
 # Auth endpoints
 @api_router.post("/auth/register", response_model=User)
 async def register(user_data: UserCreate):
