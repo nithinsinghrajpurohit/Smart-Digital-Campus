@@ -14,10 +14,7 @@ import bcrypt
 import jwt
 import random
 import string 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.utils import formataddr
+import requests
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -242,34 +239,38 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise HTTPException(status_code=401, detail="Invalid token")
 
 def send_email_task(to_email: str, subject: str, body: str):
-    """Background task to send email via SMTP"""
+    """Background task to send email via Brevo API (HTTP)"""
     print("🚀 Starting email sending task...")
-    smtp_email = os.environ.get('SMTP_EMAIL')
-    smtp_password = os.environ.get('SMTP_PASSWORD')
-    smtp_server = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
-    smtp_port = int(os.environ.get('SMTP_PORT', 587))
+    
+    brevo_api_key = os.environ.get('BREVO_API_KEY')
+    sender_email = os.environ.get('BREVO_SENDER_EMAIL', 'noreply@smartcampus.com')
+    sender_name = os.environ.get('BREVO_SENDER_NAME', 'Smart Digital Campus')
 
-    if not smtp_email or not smtp_password:
-        print(f"⚠️ SMTP credentials missing. Email to {to_email} skipped.")
+    if not brevo_api_key:
+        print(f"⚠️ Brevo API Key missing. Email to {to_email} skipped.")
         return
 
-    try:
-        print(f"Attempting to connect to {smtp_server} on port {smtp_port}...")
-        msg = MIMEMultipart()
-        msg['From'] = formataddr(('Smart Digital Campus', smtp_email))
-        msg['To'] = to_email
-        msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain'))
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": brevo_api_key,
+        "content-type": "application/json"
+    }
+    payload = {
+        "sender": {"name": sender_name, "email": sender_email},
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "textContent": body
+    }
 
-        with smtplib.SMTP(smtp_server, smtp_port, timeout=15) as server:
-            print("...Connection successful. Attempting to log in...")
-            server.starttls()
-            server.login(smtp_email, smtp_password)
-            print("...Login successful. Sending message...")
-            server.send_message(msg)
-            print(f"📧 Email sent to {to_email}")
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code in [200, 201, 202]:
+            print(f"📧 Email sent to {to_email} via Brevo API")
+        else:
+            print(f"❌ Failed to send email: {response.text}")
     except Exception as e:
-        print(f"❌ Failed to send email: {e}")
+        print(f"❌ Exception sending email: {e}")
     print("✅ Email sending task finished.")
 
 # Explicitly handle OPTIONS for send-otp to resolve 400 Bad Request issues
