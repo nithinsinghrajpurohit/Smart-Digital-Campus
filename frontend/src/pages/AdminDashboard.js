@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../App";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -39,11 +39,7 @@ const AdminDashboard = () => {
     role_target: ["student", "faculty"]
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [analyticsRes, usersRes, requestsRes, noticesRes, complaintsRes] = await Promise.all([
@@ -64,7 +60,11 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleCreateNotice = async (e) => {
     e.preventDefault();
@@ -440,3 +440,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
