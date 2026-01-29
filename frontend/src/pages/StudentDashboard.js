@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../App";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -44,11 +44,7 @@ const StudentDashboard = () => {
     roll_number: user.roll_number || ""
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [attendanceRes, marksRes, noticesRes, requestsRes] = await Promise.all([
@@ -67,7 +63,11 @@ const StudentDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, user.id]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleCreateRequest = async (e) => {
     e.preventDefault();
