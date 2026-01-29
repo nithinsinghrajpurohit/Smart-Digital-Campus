@@ -243,6 +243,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 def send_email_task(to_email: str, subject: str, body: str):
     """Background task to send email via SMTP"""
+    print("🚀 Starting email sending task...")
     smtp_email = os.environ.get('SMTP_EMAIL')
     smtp_password = os.environ.get('SMTP_PASSWORD')
     smtp_server = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
@@ -253,6 +254,7 @@ def send_email_task(to_email: str, subject: str, body: str):
         return
 
     try:
+        print(f"Attempting to connect to {smtp_server} on port {smtp_port}...")
         msg = MIMEMultipart()
         msg['From'] = formataddr(('Smart Digital Campus', smtp_email))
         msg['To'] = to_email
@@ -260,11 +262,14 @@ def send_email_task(to_email: str, subject: str, body: str):
         msg.attach(MIMEText(body, 'plain'))
 
         with smtplib.SMTP_SSL(smtp_server, smtp_port, timeout=15) as server:
+            print("...Connection successful. Attempting to log in...")
             server.login(smtp_email, smtp_password)
+            print("...Login successful. Sending message...")
             server.send_message(msg)
             print(f"📧 Email sent to {to_email}")
     except Exception as e:
         print(f"❌ Failed to send email: {e}")
+    print("✅ Email sending task finished.")
 
 # Explicitly handle OPTIONS for send-otp to resolve 400 Bad Request issues
 @api_router.options("/auth/send-otp")
