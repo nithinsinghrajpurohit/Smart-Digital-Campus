@@ -1,0 +1,135 @@
+{
+  "project_name": "Smart Digital Campus",
+  "design_philosophy": {
+    "persona": "E1: The Anti-AI Designer",
+    "core_concept": "The Enlightened Campus",
+    "vibe": "Academic Rigor meets Digital Fluidity. A fusion of Swiss International Style (clarity, grids) and Organic Modernism (warmth, growth).",
+    "principles": [
+      "Fusion over Imitation: Mix academic tradition (serifs, deep greens) with SaaS precision (mono fonts, grids).",
+      "Content is King: Data is the hero. Dashboards must be dense but breathable.",
+      "Negative Space: Use 'Stone' backgrounds to reduce eye strain compared to pure white.",
+      "Contrast: High contrast for data legibility (WCAG AA+)."
+    ]
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "weights": {
+      "headings": "font-semibold (600) or font-bold (700)",
+      "body": "font-normal (400)",
+      "emphasis": "font-medium (500)"
+    },
+    "tracking": {
+      "headings": "tracking-tight (-0.02em)",
+      "overline": "tracking-widest (0.2em)"
+    },
+    "installation": "Import Manrope and JetBrains Mono via Google Fonts in index.css"
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "name": "Deep Academic Teal",
+        "hex": "#0f393b",
+        "tailwind": "bg-[#0f393b] text-white"
+      },
+      "secondary": {
+        "name": "Warm Stone",
+        "hex": "#f4f4f0",
+        "tailwind": "bg-[#f4f4f0]"
+      },
+      "accent": {
+        "name": "Electric Lime",
+        "hex": "#ccff00",
+        "tailwind": "bg-[#ccff00] text-black"
+      },
+      "neutral": {
+        "surface": "#ffffff",
+        "border": "#e2e8f0",
+        "text_primary": "#0f172a",
+        "text_secondary": "#64748b"
+      }
+    },
+    "usage_rules": [
+      "Never use gradients for backgrounds. Use solid 'Warm Stone' or 'Deep Teal'.",
+      "Use 'Electric Lime' ONLY for primary CTAs or critical alerts.",
+      "Dashboards should use 'Warm Stone' as the app background and White for cards."
+    ]
+  },
+  "layout_system": {
+    "spacing": {
+      "base": "Use 2x standard spacing. If you think p-4 is enough, use p-8.",
+      "container_padding": "p-6 md:p-12",
+      "section_gap": "gap-8 md:gap-12"
+    },
+    "grids": {
+      "dashboard": "Bento Grid Mode B: High Density. grid-cols-1 md:grid-cols-3 lg:grid-cols-4. Gap-4.",
+      "landing": "Tetris Grid Mode A: Asymmetry. grid-cols-1 md:grid-cols-12. Gap-8."
+    },
+    "borders": {
+      "style": "Grid Borders. Expose the skeleton.",
+      "css": "border border-border/40"
+    }
+  },
+  "components": {
+    "shadcn_overrides": {
+      "card": "rounded-none border-border/60 shadow-sm hover:shadow-md transition-all duration-300",
+      "button": "rounded-full font-medium tracking-wide. Primary: bg-[#0f393b] hover:bg-[#0f393b]/90. Secondary: bg-white border border-input hover:bg-accent hover:text-accent-foreground",
+      "input": "rounded-md border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+      "badge": "rounded-sm font-mono text-xs uppercase tracking-wider"
+    },
+    "custom_rules": [
+      "Do NOT use the default 'Card' component for everything. Use raw divs with grid borders for data density.",
+      "Use 'Sonner' for all toast notifications.",
+      "Use 'Recharts' for analytics, but style them minimally (hide grid lines, use palette colors)."
+    ]
+  },
+  "assets": {
+    "icons": {
+      "library": "lucide-react",
+      "style": "Stroke width 1.5px for a refined look."
+    },
+    "images": {
+      "login_background": {
+        "url": "https://images.unsplash.com/photo-1759299615947-bc798076b479?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjB1bml2ZXJzaXR5JTIwY2FtcHVzJTIwYnVpbGRpbmd8ZW58MHx8fHwxNzY5MjM1MzM5fDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Modern university campus building"
+      },
+      "student_dashboard_hero": {
+        "url": "https://images.unsplash.com/photo-1758270704025-0e1a1793e1ca?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwyfHxkaXZlcnNlJTIwdW5pdmVyc2l0eSUyMHN0dWRlbnRzJTIwc3R1ZHlpbmd8ZW58MHx8fHwxNzY5MjM1MzQwfDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Student studying in lecture hall"
+      },
+      "faculty_dashboard_hero": {
+        "url": "https://images.unsplash.com/photo-1758270704296-a59b8f4e7dda?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHw0fHxwcm9mZXNzb3IlMjB0ZWFjaGluZyUyMGNsYXNzcm9vbXxlbnwwfHx8fDE3NjkyMzUzNDJ8MA&ixlib=rb-4.1.0&q=85",
+        "alt": "Professor teaching"
+      }
+    }
+  },
+  "pages": {
+    "login": {
+      "layout": "Split screen. Left: 50% Image (Campus) with Deep Teal overlay. Right: 50% Form (Clean, minimal).",
+      "elements": "Logo, Email/Password fields, 'Forgot Password' link, 'Sign In' button."
+    },
+    "dashboard_student": {
+      "layout": "Bento Grid. Hero widget (Attendance), List widget (Notices), Chart widget (Marks).",
+      "features": "Quick Request buttons (OD, Leave) as prominent tiles."
+    },
+    "dashboard_faculty": {
+      "layout": "High Density Grid. Table view for Attendance marking. Quick approval queue.",
+      "features": "Class schedule timeline."
+    },
+    "dashboard_admin": {
+      "layout": "Analytics Command Center. Key metrics row at top. Large charts below.",
+      "features": "User management table with bulk actions."
+    }
+  },
+  "universal_guidelines": [
+    "Avoid 'AI Slop': No generic centered layouts. No gradients on text.",
+    "Micro-interactions: All buttons must have hover states (scale, color shift).",
+    "Data-TestID: All interactive elements MUST have data-testid attributes.",
+    "Accessibility: Ensure contrast ratios. Use semantic HTML.",
+    "Theme: Default to Light Mode (Warm Stone). Support Dark Mode (Deep Obsidian)."
+  ],
+  "instructions_to_main_agent": "You are building a Smart Digital Campus system. Follow the 'Swiss & Organic' aesthetic. Use the provided image URLs. Implement the Bento Grid layouts. Prioritize density and clarity for the dashboards. Use Shadcn components but override their styles to match the 'Deep Teal/Warm Stone' palette."
+}

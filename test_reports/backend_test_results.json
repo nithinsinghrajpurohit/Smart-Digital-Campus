@@ -1,0 +1,135 @@
+{
+  "summary": {
+    "tests_run": 25,
+    "tests_passed": 25,
+    "success_rate": "100.0%"
+  },
+  "results": [
+    {
+      "test": "Student Registration",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Faculty Registration",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Admin Registration",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Student Login",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Faculty Login",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Admin Login",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Current User (student)",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Current User (faculty)",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Current User (admin)",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Students List (Faculty)",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Student Attendance",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Student Marks",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Mark Attendance",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get All Attendance",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Add Marks",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get All Marks",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Create Notice",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Notices",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Create Request",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Requests (Student)",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Update Request Status",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get Analytics",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Get All Users",
+      "status": "PASSED",
+      "details": "Status: 200, Expected: 200"
+    },
+    {
+      "test": "Student Access Admin Analytics (Should Fail)",
+      "status": "PASSED",
+      "details": "Status: 403, Expected: 403"
+    },
+    {
+      "test": "Student Mark Attendance (Should Fail)",
+      "status": "PASSED",
+      "details": "Status: 403, Expected: 403"
+    }
+  ],
+  "timestamp": "2026-01-24T06:22:54.732745"
+}
