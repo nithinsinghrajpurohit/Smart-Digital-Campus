@@ -259,7 +259,7 @@ def send_email_task(to_email: str, subject: str, body: str):
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
+        with smtplib.SMTP(smtp_server, smtp_port, timeout=15) as server:
             server.starttls()
             server.login(smtp_email, smtp_password)
             server.send_message(msg)
