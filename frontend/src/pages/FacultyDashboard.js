@@ -95,7 +95,7 @@ const FacultyDashboard = () => {
     role_target: ["student"]
   });
 
-  const fetchData = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [studentsRes, requestsRes, noticesRes, allAttendanceRes, complaintsRes, allMarksRes] = await Promise.all([
@@ -133,8 +133,8 @@ const FacultyDashboard = () => {
   }, [token]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    loadData();
+  }, [loadData]);
 
   // Fetch filtered attendance when date or subject changes
   useEffect(() => {
@@ -235,7 +235,7 @@ const FacultyDashboard = () => {
       toast.success("Notice posted successfully");
       setNoticeDialogOpen(false);
       setNewNotice({ title: "", content: "", role_target: ["student"] });
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to post notice");
     }
@@ -393,7 +393,7 @@ const FacultyDashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
       await axios.put(`${API}/requests/${requestId}`, { status, admin_comment: comment }, { headers });
       toast.success(`Request ${status}`);
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to update request");
     }
