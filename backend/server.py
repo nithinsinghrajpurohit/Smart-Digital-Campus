@@ -247,7 +247,7 @@ def send_email_task(to_email: str, subject: str, body: str):
     smtp_email = os.environ.get('SMTP_EMAIL')
     smtp_password = os.environ.get('SMTP_PASSWORD')
     smtp_server = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
-    smtp_port = int(os.environ.get('SMTP_PORT', 465))
+    smtp_port = int(os.environ.get('SMTP_PORT', 587))
 
     if not smtp_email or not smtp_password:
         print(f"⚠️ SMTP credentials missing. Email to {to_email} skipped.")
@@ -261,8 +261,9 @@ def send_email_task(to_email: str, subject: str, body: str):
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
 
-        with smtplib.SMTP_SSL(smtp_server, smtp_port, timeout=15) as server:
+        with smtplib.SMTP(smtp_server, smtp_port, timeout=15) as server:
             print("...Connection successful. Attempting to log in...")
+            server.starttls()
             server.login(smtp_email, smtp_password)
             print("...Login successful. Sending message...")
             server.send_message(msg)
