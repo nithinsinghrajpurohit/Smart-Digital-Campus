@@ -42,7 +42,7 @@ const StudentDashboard = () => {
     roll_number: user.roll_number || ""
   });
 
-  const fetchData = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [attendanceRes, marksRes, noticesRes, requestsRes] = await Promise.all([
@@ -64,8 +64,8 @@ const StudentDashboard = () => {
   }, [token, user.id]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    loadData();
+  }, [loadData]);
 
   const handleCreateRequest = async (e) => {
     e.preventDefault();
@@ -75,7 +75,7 @@ const StudentDashboard = () => {
       toast.success("Request submitted successfully");
       setRequestDialogOpen(false);
       setNewRequest({ request_type: "leave", reason: "", start_date: "", end_date: "", roll_number: user.roll_number || "" });
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to submit request");
     }
