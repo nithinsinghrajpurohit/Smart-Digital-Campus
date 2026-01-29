@@ -39,7 +39,7 @@ const AdminDashboard = () => {
     role_target: ["student", "faculty"]
   });
 
-  const fetchData = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [analyticsRes, usersRes, requestsRes, noticesRes, complaintsRes] = await Promise.all([
@@ -63,8 +63,8 @@ const AdminDashboard = () => {
   }, [token]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    loadData();
+  }, [loadData]);
 
   const handleCreateNotice = async (e) => {
     e.preventDefault();
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
       toast.success("System-wide notice posted");
       setNoticeDialogOpen(false);
       setNewNotice({ title: "", content: "", role_target: ["student", "faculty"] });
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to post notice");
     }
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
       await axios.put(`${API}/requests/${requestId}`, { status, admin_comment: comment }, { headers });
       toast.success(`Request ${status}`);
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to update request");
     }
@@ -440,4 +440,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
 
