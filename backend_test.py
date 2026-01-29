@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 
 class CampusAPITester:
-    def __init__(self, base_url="https://smart-campus-drwa.onrender.com"):
+    def __init__(self, base_url="https://smart-digital-campus-1.onrender.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tokens = {}
@@ -483,4 +483,5 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
 
