@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../App";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -18,14 +18,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { BookOpen, Calendar, FileText, ClipboardList, Bell, User, MessageSquareWarning, Pencil } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
-import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../config";
 
 const API = `${API_BASE_URL}/api`;
 
 const StudentDashboard = () => {
   const { user, token, login } = useAuth();
-  const navigate = useNavigate();
   const [attendance, setAttendance] = useState([]);
   const [marks, setMarks] = useState([]);
   const [notices, setNotices] = useState([]);
@@ -44,11 +42,7 @@ const StudentDashboard = () => {
     roll_number: user.roll_number || ""
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [attendanceRes, marksRes, noticesRes, requestsRes] = await Promise.all([
@@ -67,7 +61,11 @@ const StudentDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, user.id]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleCreateRequest = async (e) => {
     e.preventDefault();
@@ -77,7 +75,7 @@ const StudentDashboard = () => {
       toast.success("Request submitted successfully");
       setRequestDialogOpen(false);
       setNewRequest({ request_type: "leave", reason: "", start_date: "", end_date: "", roll_number: user.roll_number || "" });
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to submit request");
     }

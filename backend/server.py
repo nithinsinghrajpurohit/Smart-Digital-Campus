@@ -18,8 +18,6 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formataddr
-from fastapi.staticfiles import StaticFiles
-from starlette.responses import FileResponse
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -829,19 +827,6 @@ async def get_all_users(current_user: User = Depends(get_current_user)):
     return users
 
 app.include_router(api_router)
-
-# Serve frontend static files
-# This must come AFTER the API router is included
-try:
-    app.mount("/", StaticFiles(directory=ROOT_DIR / "../frontend/dist", html=True), name="static")
-
-    @app.exception_handler(404)
-    async def custom_404_handler(_, __):
-        """Catch-all for client-side routing."""
-        return FileResponse(ROOT_DIR / "../frontend/dist/index.html")
-
-except RuntimeError:
-    print("Frontend 'dist' directory not found. Skipping static file mount.")
 
 app.add_middleware(
     CORSMiddleware,

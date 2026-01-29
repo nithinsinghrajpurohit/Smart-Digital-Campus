@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "../App";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -95,11 +95,7 @@ const FacultyDashboard = () => {
     role_target: ["student"]
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const [studentsRes, requestsRes, noticesRes, allAttendanceRes, complaintsRes, allMarksRes] = await Promise.all([
@@ -119,24 +115,26 @@ const FacultyDashboard = () => {
       // For attendance overview
       const uniqueSubjects = [...new Set(allAttendanceRes.data.map(item => item.subject).filter(Boolean))];
       setSubjects(uniqueSubjects);
-      if (uniqueSubjects.length > 0 && !selectedSubject) {
-        setSelectedSubject(uniqueSubjects[0]);
-      }
+      setSelectedSubject(prev => prev || (uniqueSubjects.length > 0 ? uniqueSubjects[0] : ""));
 
       // For marks overview
       const uniqueMarksSubjects = [...new Set(allMarksRes.data.map(item => item.subject).filter(Boolean))];
       const uniqueExamTypes = [...new Set(allMarksRes.data.map(item => item.exam_type).filter(Boolean))];
       setMarksSubjects(uniqueMarksSubjects);
       setExamTypes(uniqueExamTypes);
-      if (uniqueMarksSubjects.length > 0 && !marksOverviewSubject) setMarksOverviewSubject(uniqueMarksSubjects[0]);
-      if (uniqueExamTypes.length > 0 && !marksOverviewExamType) setMarksOverviewExamType(uniqueExamTypes[0]);
+      setMarksOverviewSubject(prev => prev || (uniqueMarksSubjects.length > 0 ? uniqueMarksSubjects[0] : ""));
+      setMarksOverviewExamType(prev => prev || (uniqueExamTypes.length > 0 ? uniqueExamTypes[0] : ""));
 
     } catch (error) {
       toast.error("Failed to load data");
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   // Fetch filtered attendance when date or subject changes
   useEffect(() => {
@@ -237,7 +235,7 @@ const FacultyDashboard = () => {
       toast.success("Notice posted successfully");
       setNoticeDialogOpen(false);
       setNewNotice({ title: "", content: "", role_target: ["student"] });
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to post notice");
     }
@@ -395,7 +393,7 @@ const FacultyDashboard = () => {
       const headers = { Authorization: `Bearer ${token}` };
       await axios.put(`${API}/requests/${requestId}`, { status, admin_comment: comment }, { headers });
       toast.success(`Request ${status}`);
-      fetchData();
+      loadData();
     } catch (error) {
       toast.error("Failed to update request");
     }
