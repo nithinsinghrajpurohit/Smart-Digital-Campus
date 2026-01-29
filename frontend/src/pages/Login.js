@@ -13,14 +13,11 @@ import {
   GraduationCap, 
   User, 
   Shield, 
-  ArrowLeft, 
-  Mail, 
-  Lock, 
-  Building, 
-  Hash, 
-  Calendar, 
+  ArrowLeft,
+  Mail,
+  Lock,
+  Hash,
   Briefcase,
-  KeyRound,
   Phone
 } from "lucide-react";
 import {
