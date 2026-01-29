@@ -18,14 +18,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { BookOpen, Calendar, FileText, ClipboardList, Bell, User, MessageSquareWarning, Pencil } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts";
-import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../config";
 
 const API = `${API_BASE_URL}/api`;
 
 const StudentDashboard = () => {
   const { user, token, login } = useAuth();
-  const navigate = useNavigate();
   const [attendance, setAttendance] = useState([]);
   const [marks, setMarks] = useState([]);
   const [notices, setNotices] = useState([]);
