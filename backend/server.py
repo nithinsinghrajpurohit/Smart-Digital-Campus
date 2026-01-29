@@ -28,7 +28,7 @@ db = client[os.environ['DB_NAME']]
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
-VALID_FACULTY_IDS = ["66", "107", "102", "132", "222", "319"]
+VALID_FACULTY_IDS = ["66", "107", "102", "132", "222", "319","192"]
 
 security = HTTPBearer()
 
