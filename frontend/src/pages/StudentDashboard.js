@@ -42,6 +42,13 @@ const StudentDashboard = () => {
     end_date: "",
     roll_number: user.roll_number || ""
   });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    roll_number: "",
+    year: "",
+    section: "",
+    mobile_number: ""
+  });
 
   const loadData = useCallback(async () => {
     try {
@@ -75,6 +82,17 @@ const StudentDashboard = () => {
       Notification.requestPermission();
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setEditFormData({
+        roll_number: user.roll_number || "",
+        year: user.year ? String(user.year) : "",
+        section: user.section || "",
+        mobile_number: user.mobile_number || ""
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (notices.length > 0) {
@@ -140,6 +158,25 @@ const StudentDashboard = () => {
       setProfileImageDialogOpen(false);
     } catch (error) {
       toast.error("Failed to update profile photo.");
+    }
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const payload = {
+        ...editFormData,
+        year: editFormData.year ? parseInt(editFormData.year) : null
+      };
+      
+      const response = await axios.put(`${API}/users/me`, payload, { headers });
+      
+      login(token, response.data);
+      toast.success("Profile details updated successfully.");
+      setIsEditingProfile(false);
+    } catch (error) {
+      toast.error("Failed to update profile details.");
     }
   };
 
@@ -424,7 +461,14 @@ const StudentDashboard = () => {
                 </Tooltip>
                 <DialogContent className="max-w-md" data-testid="profile-dialog">
                   <DialogHeader>
-                    <DialogTitle>Student Profile</DialogTitle>
+                    <DialogTitle className="flex justify-between items-center">
+                      Student Profile
+                      {!isEditingProfile && (
+                        <Button variant="ghost" size="sm" onClick={() => setIsEditingProfile(true)}>
+                          <Pencil className="h-4 w-4 mr-2" /> Edit
+                        </Button>
+                      )}
+                    </DialogTitle>
                     <DialogDescription>Your academic details</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
@@ -449,28 +493,84 @@ const StudentDashboard = () => {
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Roll Number</p>
-                        <p className="font-medium">{user.roll_number || "-"}</p>
+                    {isEditingProfile ? (
+                      <form onSubmit={handleProfileUpdate} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="edit-roll">Roll Number</Label>
+                            <Input 
+                              id="edit-roll" 
+                              value={editFormData.roll_number} 
+                              onChange={(e) => setEditFormData({...editFormData, roll_number: e.target.value})}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="edit-mobile">Mobile</Label>
+                            <Input 
+                              id="edit-mobile" 
+                              value={editFormData.mobile_number} 
+                              onChange={(e) => setEditFormData({...editFormData, mobile_number: e.target.value})}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="edit-year">Year</Label>
+                            <Select 
+                              value={editFormData.year} 
+                              onValueChange={(value) => setEditFormData({...editFormData, year: value})}
+                            >
+                              <SelectTrigger id="edit-year"><SelectValue placeholder="Year" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1">1st</SelectItem>
+                                <SelectItem value="2">2nd</SelectItem>
+                                <SelectItem value="3">3rd</SelectItem>
+                                <SelectItem value="4">4th</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="edit-section">Section</Label>
+                            <Select 
+                              value={editFormData.section} 
+                              onValueChange={(value) => setEditFormData({...editFormData, section: value})}
+                            >
+                              <SelectTrigger id="edit-section"><SelectValue placeholder="Section" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1">1</SelectItem>
+                                <SelectItem value="2">2</SelectItem>
+                                <SelectItem value="3">3</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button type="button" variant="outline" onClick={() => setIsEditingProfile(false)}>Cancel</Button>
+                          <Button type="submit">Save Changes</Button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Roll Number</p>
+                          <p className="font-medium">{user.roll_number || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Department</p>
+                          <p className="font-medium">{user.department || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Year</p>
+                          <p className="font-medium">{user.year ? `${user.year} Year` : "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Section</p>
+                          <p className="font-medium">{user.section || "-"}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Mobile Number</p>
+                          <p className="font-medium">{user.mobile_number || "-"}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-muted-foreground">Department</p>
-                        <p className="font-medium">{user.department || "-"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Year</p>
-                        <p className="font-medium">{user.year ? `${user.year} Year` : "-"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Section</p>
-                        <p className="font-medium">{user.section || "-"}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Mobile Number</p>
-                        <p className="font-medium">{user.mobile_number || "-"}</p>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>
@@ -692,4 +792,5 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
+
 
