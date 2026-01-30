@@ -41,7 +41,7 @@ const InputWithIcon = ({ icon: Icon, ...props }) => (
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
   const [otp, setOtp] = useState("");
@@ -67,6 +67,14 @@ const Login = () => {
     setSelectedRole(role);
     setRegisterData(prev => ({ ...prev, role }));
   };
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === "student") navigate("/student/dashboard", { replace: true });
+      else if (user.role === "faculty") navigate("/faculty/dashboard", { replace: true });
+      else if (user.role === "admin") navigate("/admin/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     if (resendCooldown > 0) {
@@ -102,9 +110,9 @@ const Login = () => {
       login(token, user);
       toast.success("Login successful!");
       
-      if (user.role === "student") navigate("/student/dashboard");
-      else if (user.role === "faculty") navigate("/faculty/dashboard");
-      else if (user.role === "admin") navigate("/admin/dashboard");
+      if (user.role === "student") navigate("/student/dashboard", { replace: true });
+      else if (user.role === "faculty") navigate("/faculty/dashboard", { replace: true });
+      else if (user.role === "admin") navigate("/admin/dashboard", { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.detail || "Login failed");
     } finally {
@@ -480,3 +488,4 @@ const Login = () => {
 };
 
 export default Login;
+
