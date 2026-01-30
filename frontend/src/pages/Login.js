@@ -383,19 +383,6 @@ const Login = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
-                      <InputWithIcon
-                        icon={Mail}
-                        id="register-email"
-                        type="email"
-                        placeholder="your.email@example.com"
-                        value={registerData.email}
-                        onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                        required
-                      />
-                      <p className="text-xs text-muted-foreground pt-1">An OTP will be sent to this email for verification.</p>
-                    </div>
-                    <div className="space-y-2">
                       <Label htmlFor="register-mobile">Mobile Number</Label>
                       <InputWithIcon
                         icon={Phone}
@@ -408,6 +395,19 @@ const Login = () => {
                         pattern="[0-9]{10}"
                         title="Please enter a valid 10-digit mobile number."
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-email">Email</Label>
+                      <InputWithIcon
+                        icon={Mail}
+                        id="register-email"
+                        type="email"
+                        placeholder="your.email@example.com"
+                        value={registerData.email}
+                        onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground pt-1">An OTP will be sent to this email for verification.</p>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="register-otp">OTP Verification</Label>
@@ -488,4 +488,5 @@ const Login = () => {
 };
 
 export default Login;
+
 
