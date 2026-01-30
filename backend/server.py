@@ -172,7 +172,6 @@ class RequestUpdate(BaseModel):
     admin_comment: Optional[str] = None
 
 class UserUpdate(BaseModel):
-    roll_number: Optional[str] = None
     year: Optional[int] = None
     section: Optional[str] = None
     mobile_number: Optional[str] = None
