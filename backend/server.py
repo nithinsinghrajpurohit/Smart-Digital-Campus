@@ -28,7 +28,7 @@ db = client[os.environ['DB_NAME']]
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
-VALID_FACULTY_IDS = ["66", "107", "102", "132", "222", "319","192"]
+VALID_FACULTY_IDS = ["66", "107", "102", "132", "222", "319", "192"]
 
 security = HTTPBearer()
 
@@ -170,6 +170,12 @@ class RequestCreate(BaseModel):
 class RequestUpdate(BaseModel):
     status: Literal["approved", "rejected"]
     admin_comment: Optional[str] = None
+
+class UserUpdate(BaseModel):
+    roll_number: Optional[str] = None
+    year: Optional[int] = None
+    section: Optional[str] = None
+    mobile_number: Optional[str] = None
 
 class ProfileImageUpdate(BaseModel):
     profile_image_url: str
@@ -380,6 +386,30 @@ async def update_profile_image(
     await db.users.update_one(
         {"id": current_user.id},
         {"$set": {"profile_image_url": update_data.profile_image_url}}
+    )
+    
+    updated_user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0})
+    if not updated_user_doc:
+        raise HTTPException(status_code=404, detail="User not found after update")
+
+    if isinstance(updated_user_doc.get('created_at'), str):
+        updated_user_doc['created_at'] = datetime.fromisoformat(updated_user_doc['created_at'])
+    
+    return User(**updated_user_doc)
+
+@api_router.put("/users/me", response_model=User)
+async def update_me(
+    update_data: UserUpdate,
+    current_user: User = Depends(get_current_user)
+):
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    
+    if not update_dict:
+        return current_user
+
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": update_dict}
     )
     
     updated_user_doc = await db.users.find_one({"id": current_user.id}, {"_id": 0})
