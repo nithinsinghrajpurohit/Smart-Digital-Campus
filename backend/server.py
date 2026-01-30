@@ -15,6 +15,7 @@ import jwt
 import random
 import string 
 import requests
+import re
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -326,6 +327,21 @@ async def register(user_data: UserCreate):
     if user_data.role == "student":
         # if not user_data.email.endswith("@aits-tpt.edu.in"):
         #     raise HTTPException(status_code=400, detail="Student email must be @aits-tpt.edu.in")
+        
+        if not user_data.roll_number:
+            raise HTTPException(status_code=400, detail="Roll number is required")
+        if not user_data.department:
+            raise HTTPException(status_code=400, detail="Department is required")
+        if user_data.year is None:
+            raise HTTPException(status_code=400, detail="Year is required")
+        if not user_data.section:
+            raise HTTPException(status_code=400, detail="Section is required")
+        if not user_data.mobile_number:
+            raise HTTPException(status_code=400, detail="Mobile number is required")
+
+        existing_roll = await db.users.find_one({"roll_number": {"$regex": f"^{re.escape(user_data.roll_number)}$", "$options": "i"}})
+        if existing_roll:
+            raise HTTPException(status_code=400, detail="Roll number already registered")
         
         if not user_data.otp:
             raise HTTPException(status_code=400, detail="OTP is required for student registration")
