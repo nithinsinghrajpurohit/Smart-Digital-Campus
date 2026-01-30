@@ -673,6 +673,48 @@ const FacultyDashboard = () => {
                   </div>
                 </DialogContent>
               </Dialog>
+              <Dialog>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" className="rounded-full" size="icon">
+                        <User className="h-5 w-5" />
+                        <span className="sr-only">View Profile</span>
+                      </Button>
+                    </DialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View Profile</p>
+                  </TooltipContent>
+                </Tooltip>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Faculty Profile</DialogTitle>
+                    <DialogDescription>Your professional details</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <User className="h-8 w-8 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-heading text-lg font-semibold">{user.name}</h3>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Employee ID</p>
+                        <p className="font-medium">{user.employee_id || "-"}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Department</p>
+                        <p className="font-medium">{user.department || "-"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" className="rounded-full" size="icon" onClick={() => setComplaintDialogOpen(true)}>
@@ -1355,5 +1397,6 @@ const FacultyDashboard = () => {
 };
 
 export default FacultyDashboard;
+
 
 
