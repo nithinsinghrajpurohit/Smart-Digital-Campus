@@ -18,7 +18,9 @@ import {
   Lock,
   Hash,
   Briefcase,
-  Phone
+  Phone,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import {
   InputOTP,
@@ -30,14 +32,32 @@ import API_BASE_URL from "../config";
 
 const API = `${API_BASE_URL}/api`;
 
-const InputWithIcon = ({ icon: Icon, ...props }) => (
-  <div className="relative">
-    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-      <Icon className="h-5 w-5 text-gray-400" />
+const InputWithIcon = ({ icon: Icon, ...props }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = props.type === "password";
+
+  return (
+    <div className="relative">
+      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <Icon className="h-5 w-5 text-gray-400" />
+      </div>
+      <Input 
+        {...props} 
+        type={isPassword ? (showPassword ? "text" : "password") : props.type}
+        className={`pl-10 h-10 ${isPassword ? "pr-10" : ""}`} 
+      />
+      {isPassword && (
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+        >
+          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      )}
     </div>
-    <Input {...props} className="pl-10 h-10" />
-  </div>
-);
+  );
+};
 
 const Login = () => {
   const navigate = useNavigate();
@@ -488,5 +508,6 @@ const Login = () => {
 };
 
 export default Login;
+
 
 
