@@ -44,7 +44,6 @@ const StudentDashboard = () => {
   });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editFormData, setEditFormData] = useState({
-    roll_number: "",
     year: "",
     section: ""
   });
@@ -85,7 +84,6 @@ const StudentDashboard = () => {
   useEffect(() => {
     if (user) {
       setEditFormData({
-        roll_number: user.roll_number || "",
         year: user.year ? String(user.year) : "",
         section: user.section || ""
       });
@@ -495,14 +493,6 @@ const StudentDashboard = () => {
                       <form onSubmit={handleProfileUpdate} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label htmlFor="edit-roll">Roll Number</Label>
-                            <Input 
-                              id="edit-roll" 
-                              value={editFormData.roll_number} 
-                              onChange={(e) => setEditFormData({...editFormData, roll_number: e.target.value})}
-                            />
-                          </div>
-                          <div className="space-y-2">
                             <Label htmlFor="edit-year">Year</Label>
                             <Select 
                               value={editFormData.year} 
@@ -782,6 +772,7 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
+
 
 
 
