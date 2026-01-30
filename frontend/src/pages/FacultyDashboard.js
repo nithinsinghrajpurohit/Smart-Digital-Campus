@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner"; 
-import { LogOut, UserCheck, GraduationCap, FileText, Bell, Check, X, User, MessageSquareWarning } from "lucide-react";
+import { LogOut, UserCheck, GraduationCap, FileText, Bell, Check, X, User, MessageSquareWarning, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../config";
 
@@ -473,6 +473,56 @@ const FacultyDashboard = () => {
     return filtered.sort((a, b) => (a.roll_number || "").localeCompare(b.roll_number || ""));
   }, [students, studentListYear, studentListSection, searchRollNumber]);
 
+  const downloadCSV = (data, filename) => {
+    const headers = Object.keys(data[0]);
+    const rows = data.map(row => headers.map(fieldName => JSON.stringify(row[fieldName], (key, value) => value === null ? '' : value)).join(","));
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportAttendance = () => {
+    if (filteredAttendance.length === 0) {
+      toast.error("No attendance records to export.");
+      return;
+    }
+    const csvData = filteredAttendance.map(record => {
+      const student = students.find(s => s.id === record.student_id);
+      return {
+        "Date": record.date,
+        "Subject": record.subject,
+        "Student Name": record.student_name,
+        "Roll Number": student?.roll_number || "N/A",
+        "Status": record.status
+      };
+    });
+    downloadCSV(csvData, `Attendance_${selectedSubject}_${selectedDate}.csv`);
+  };
+
+  const handleExportMarks = () => {
+    if (filteredMarksOverview.length === 0) {
+      toast.error("No marks records to export.");
+      return;
+    }
+    const csvData = filteredMarksOverview.map(record => {
+      const student = students.find(s => s.id === record.student_id);
+      return {
+        "Subject": record.subject,
+        "Exam Type": record.exam_type,
+        "Student Name": record.student_name,
+        "Roll Number": student?.roll_number || "N/A",
+        "Marks Obtained": record.marks,
+        "Max Marks": record.max_marks,
+        "Percentage": ((record.marks / record.max_marks) * 100).toFixed(2) + "%"
+      };
+    });
+    downloadCSV(csvData, `Marks_${marksOverviewSubject}_${marksOverviewExamType}.csv`);
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -1021,9 +1071,15 @@ const FacultyDashboard = () => {
           </TabsList>
           <TabsContent value="attendance">
             <Card>
-              <CardHeader>
-                <CardTitle>Attendance Overview</CardTitle>
-                <CardDescription>View daily attendance records for your subjects.</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Attendance Overview</CardTitle>
+                  <CardDescription>View daily attendance records for your subjects.</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleExportAttendance}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 items-end">
@@ -1112,9 +1168,15 @@ const FacultyDashboard = () => {
           </TabsContent>
           <TabsContent value="marks">
             <Card>
-              <CardHeader>
-                <CardTitle>Marks Overview</CardTitle>
-                <CardDescription>View student performance by subject and exam type.</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Marks Overview</CardTitle>
+                  <CardDescription>View student performance by subject and exam type.</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleExportMarks}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
@@ -1397,6 +1459,7 @@ const FacultyDashboard = () => {
 };
 
 export default FacultyDashboard;
+
 
 
 
