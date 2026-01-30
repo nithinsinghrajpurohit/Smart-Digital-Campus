@@ -29,6 +29,7 @@ const StudentDashboard = () => {
   const [notices, setNotices] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [noticesOpen, setNoticesOpen] = useState(false);
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
   const [complaintDialogOpen, setComplaintDialogOpen] = useState(false);
   const [newComplaint, setNewComplaint] = useState({ content: "" });
@@ -65,7 +66,35 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(loadData, 30000); // Poll every 30 seconds for new notices
+    return () => clearInterval(interval);
   }, [loadData]);
+
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (notices.length > 0) {
+      const latestNotice = notices[0];
+      const storageKey = `lastSeenNoticeId_${user.id}`;
+      const lastSeenId = localStorage.getItem(storageKey);
+
+      if (latestNotice.id !== lastSeenId) {
+        setNoticesOpen(true);
+        localStorage.setItem(storageKey, latestNotice.id);
+
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification(`New Notice: ${latestNotice.title}`, {
+            body: latestNotice.content,
+          });
+        }
+        toast.info("You have a new notice!");
+      }
+    }
+  }, [notices, user.id]);
 
   const handleCreateRequest = async (e) => {
     e.preventDefault();
@@ -285,7 +314,7 @@ const StudentDashboard = () => {
           </div>
           <TooltipProvider>
             <div className="flex items-center gap-2">
-              <Dialog>
+              <Dialog open={noticesOpen} onOpenChange={setNoticesOpen}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DialogTrigger asChild>
@@ -663,3 +692,4 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
+
