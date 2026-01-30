@@ -519,9 +519,13 @@ const FacultyDashboard = () => {
             <div className="space-y-4">
               {/* Profile Header */}
               <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/40">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-8 w-8 text-primary" />
-                </div>
+                {selectedStudent.profile_image_url ? (
+                  <img src={selectedStudent.profile_image_url} alt={selectedStudent.name} className="h-16 w-16 rounded-full object-cover" />
+                ) : (
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-8 w-8 text-primary" />
+                  </div>
+                )}
                 <div>
                   <h3 className="font-heading text-lg font-semibold">{selectedStudent.name}</h3>
                   <p className="text-sm text-muted-foreground">{selectedStudent.email}</p>
@@ -1351,4 +1355,5 @@ const FacultyDashboard = () => {
 };
 
 export default FacultyDashboard;
+
 
