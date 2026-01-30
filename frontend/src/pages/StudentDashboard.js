@@ -46,8 +46,7 @@ const StudentDashboard = () => {
   const [editFormData, setEditFormData] = useState({
     roll_number: "",
     year: "",
-    section: "",
-    mobile_number: ""
+    section: ""
   });
 
   const loadData = useCallback(async () => {
@@ -88,8 +87,7 @@ const StudentDashboard = () => {
       setEditFormData({
         roll_number: user.roll_number || "",
         year: user.year ? String(user.year) : "",
-        section: user.section || "",
-        mobile_number: user.mobile_number || ""
+        section: user.section || ""
       });
     }
   }, [user]);
@@ -505,14 +503,6 @@ const StudentDashboard = () => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="edit-mobile">Mobile</Label>
-                            <Input 
-                              id="edit-mobile" 
-                              value={editFormData.mobile_number} 
-                              onChange={(e) => setEditFormData({...editFormData, mobile_number: e.target.value})}
-                            />
-                          </div>
-                          <div className="space-y-2">
                             <Label htmlFor="edit-year">Year</Label>
                             <Select 
                               value={editFormData.year} 
@@ -792,5 +782,6 @@ const StudentDashboard = () => {
 };
 
 export default StudentDashboard;
+
 
 
