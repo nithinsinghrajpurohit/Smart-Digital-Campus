@@ -33,6 +33,7 @@ const FacultyDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [complaints, setComplaints] = useState([]);
   const [noticeDialogOpen, setNoticeDialogOpen] = useState(false);
+  const [noticesOpen, setNoticesOpen] = useState(false);
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [marksDialogOpen, setMarksDialogOpen] = useState(false);
 
@@ -134,7 +135,35 @@ const FacultyDashboard = () => {
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(loadData, 30000);
+    return () => clearInterval(interval);
   }, [loadData]);
+
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (notices.length > 0) {
+      const latestNotice = notices[0];
+      const storageKey = `lastSeenNoticeId_${user.id}`;
+      const lastSeenId = localStorage.getItem(storageKey);
+
+      if (latestNotice.id !== lastSeenId) {
+        setNoticesOpen(true);
+        localStorage.setItem(storageKey, latestNotice.id);
+
+        if ("Notification" in window && Notification.permission === "granted") {
+          new Notification(`New Notice: ${latestNotice.title}`, {
+            body: latestNotice.content,
+          });
+        }
+        toast.info("You have a new notice!");
+      }
+    }
+  }, [notices, user.id]);
 
   // Fetch filtered attendance when date or subject changes
   useEffect(() => {
@@ -603,6 +632,43 @@ const FacultyDashboard = () => {
           </div>
           <TooltipProvider>
             <div className="flex items-center gap-2">
+              <Dialog open={noticesOpen} onOpenChange={setNoticesOpen}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" className="relative rounded-full" size="icon">
+                        <Bell className="h-5 w-5" />
+                        <span className="sr-only">View Notices</span>
+                      </Button>
+                    </DialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View Notices</p>
+                  </TooltipContent>
+                </Tooltip>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Recent Notices</DialogTitle>
+                    <DialogDescription>Latest announcements</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-3 max-h-[60vh] overflow-y-auto p-1">
+                    {notices.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-4">No notices available</p>
+                    ) : (
+                      notices.map((notice) => (
+                        <div key={notice.id} className="notice-item p-4 border border-border/40 rounded-sm">
+                          <h4 className="font-semibold text-sm mb-1">{notice.title}</h4>
+                          <p className="text-sm text-muted-foreground mb-2">{notice.content}</p>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>By: {notice.posted_by_name}</span>
+                            <span>{new Date(notice.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" className="rounded-full" size="icon" onClick={() => setComplaintDialogOpen(true)}>
@@ -1285,3 +1351,4 @@ const FacultyDashboard = () => {
 };
 
 export default FacultyDashboard;
+
