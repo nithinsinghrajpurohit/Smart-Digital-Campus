@@ -244,7 +244,52 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def send_email_task(to_email: str, subject: str, body: str):
+def get_email_html(heading: str, message: str, otp: Optional[str] = None) -> str:
+    otp_block = ""
+    if otp:
+        otp_block = f"""
+        <div style="background-color: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 16px; margin: 24px 0; text-align: center;">
+            <span style="font-family: monospace; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #0284c7;">{otp}</span>
+        </div>
+        """
+    
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #374151; margin: 0; padding: 0; background-color: #f3f4f6; }}
+            .container {{ max-width: 580px; margin: 40px auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden; }}
+            .header {{ background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 32px 24px; text-align: center; }}
+            .header h1 {{ margin: 0; color: #ffffff; font-size: 24px; font-weight: 700; letter-spacing: -0.025em; }}
+            .content {{ padding: 32px 24px; }}
+            .footer {{ background-color: #f9fafb; padding: 24px; text-align: center; font-size: 12px; color: #9ca3af; border-top: 1px solid #e5e7eb; }}
+            h2 {{ color: #111827; font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 16px; }}
+            p {{ margin-bottom: 16px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Smart Digital Campus</h1>
+            </div>
+            <div class="content">
+                <h2>{heading}</h2>
+                <p>{message}</p>
+                {otp_block}
+                <p style="font-size: 14px; color: #6b7280;">This code is valid for 10 minutes. Do not share this code with anyone.</p>
+            </div>
+            <div class="footer">
+                <p>&copy; {datetime.now().year} Smart Digital Campus. All rights reserved.</p>
+                <p>This is an automated message, please do not reply.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+def send_email_task(to_email: str, subject: str, body: str, html_body: Optional[str] = None):
     """Background task to send email via Brevo API (HTTP)"""
     print("🚀 Starting email sending task...")
     
@@ -268,6 +313,8 @@ def send_email_task(to_email: str, subject: str, body: str):
         "subject": subject,
         "textContent": body
     }
+    if html_body:
+        payload["htmlContent"] = html_body
 
     try:
         response = requests.post(url, json=payload, headers=headers)
@@ -302,9 +349,10 @@ async def send_otp(request: OTPRequest, background_tasks: BackgroundTasks):
     # In a real application, send this via email. For now, we log it.
     print(f"🔐 OTP for {request.email}: {otp}")
     
-    email_subject = "Smart Digital Campus - Verification OTP"
+    email_subject = "Smart Digital Campus - Verification Code"
     email_body = f"Your verification code is: {otp}\n\nThis code expires in 10 minutes."
-    background_tasks.add_task(send_email_task, request.email, email_subject, email_body)
+    email_html = get_email_html("Verification Code", "Please use the following verification code to complete your registration.", otp)
+    background_tasks.add_task(send_email_task, request.email, email_subject, email_body, html_body=email_html)
     
     return {"message": "OTP sent successfully"}
 
