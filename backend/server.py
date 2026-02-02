@@ -20,6 +20,12 @@ import re
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -229,19 +235,23 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
         if user_id is None:
+            logger.warning("Token validation failed: Missing 'sub' claim")
             raise HTTPException(status_code=401, detail="Invalid token")
         
         user_doc = await db.users.find_one({"id": user_id}, {"_id": 0})
         if user_doc is None:
+            logger.warning(f"Token validation failed: User {user_id} not found in database")
             raise HTTPException(status_code=401, detail="User not found")
         
         if isinstance(user_doc.get('created_at'), str):
             user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
         
         return User(**user_doc)
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError as e:
+        logger.warning(f"Token validation failed: Expired token - {str(e)}")
         raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.JWTError:
+    except jwt.JWTError as e:
+        logger.warning(f"Token validation failed: JWT Error - {str(e)}")
         raise HTTPException(status_code=401, detail="Invalid token")
 
 def get_email_html(heading: str, message: str, otp: Optional[str] = None) -> str:
@@ -939,12 +949,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
