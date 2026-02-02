@@ -34,7 +34,7 @@ db = client[os.environ['DB_NAME']]
 # Security
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES = 10080  # 7 days
 VALID_FACULTY_IDS = ["66", "107", "102", "132", "222", "319", "192"]
 
 security = HTTPBearer()
@@ -232,7 +232,7 @@ def create_access_token(data: dict):
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> User:
     try:
         token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"leeway": 60})
         user_id: str = payload.get("sub")
         if user_id is None:
             logger.warning("Token validation failed: Missing 'sub' claim")
@@ -246,7 +246,11 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         if isinstance(user_doc.get('created_at'), str):
             user_doc['created_at'] = datetime.fromisoformat(user_doc['created_at'])
         
-        return User(**user_doc)
+        try:
+            return User(**user_doc)
+        except Exception as e:
+            logger.error(f"User model validation failed for {user_id}: {e}")
+            raise HTTPException(status_code=401, detail="User data invalid")
     except jwt.ExpiredSignatureError as e:
         logger.warning(f"Token validation failed: Expired token - {str(e)}")
         raise HTTPException(status_code=401, detail="Token expired")
@@ -450,6 +454,11 @@ async def login(login_data: LoginRequest):
 @api_router.get("/auth/me", response_model=User)
 async def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+@api_router.get("/auth/verify")
+async def verify_token(current_user: User = Depends(get_current_user)):
+    """Lightweight endpoint to verify token validity"""
+    return {"status": "valid", "user_id": current_user.id, "role": current_user.role}
 
 @api_router.put("/users/me/profile-image", response_model=User)
 async def update_profile_image(
